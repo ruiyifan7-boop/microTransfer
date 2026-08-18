@@ -1,0 +1,5 @@
+file	file_id	size_bytes	md5	download_url	description
+lc_study_mapping_file.tsv	17336	154918	70c776ab613800347a86a1b78f9153a5	https://datadryad.org/downloads/file_stream/17336	Sample metadata
+lc_study_otu_table.tsv.gz	17335	5982531	85bde2c7a81140907d2a9cceae5f55c4	https://datadryad.org/downloads/file_stream/17335	GreenGenes 13_8 97% OTU count table
+gg_otus_tax.rds	17337	1368095	cfb234a8be3f3f195b6b5b903d16782f	https://datadryad.org/downloads/file_stream/17337	OTU taxonomy
+organelle.rds	17338	3853	0965d49f14366ed053e37e4943c61e27	https://datadryad.org/downloads/file_stream/17338	Organellar OTU identifiers

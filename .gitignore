@@ -1,0 +1,8 @@
+/.Rhistory
+/.RData
+/.Rproj.user/
+/*.Rcheck/
+/*.tar.gz
+/results/
+__pycache__/
+*.pyc

@@ -1,0 +1,4 @@
+threshold	pooled_candidates	study_aware_candidates	pooled_only_candidates	pooled_only_fraction
+0.1	7633	4206	3427	0.448971570810952
+0.3	3377	1783	1594	0.472016582765768
+0.5	1540	806	734	0.476623376623377

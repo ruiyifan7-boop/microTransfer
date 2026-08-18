@@ -1,0 +1,12 @@
+^\.git$
+^\.github$
+^\.gitignore$
+^CITATION\.cff$
+^LICENSE\.md$
+^DATA_AVAILABILITY\.md$
+^RELEASE_NOTES\.md$
+^analysis$
+^check$
+^validation$
+^dist$
+^SHA256SUMS\.txt$

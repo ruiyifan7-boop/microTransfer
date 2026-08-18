@@ -1,0 +1,225 @@
+---
+title: "A four-step study-aware transferability workflow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{A four-step study-aware transferability workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(microTransfer)
+set.seed(20260722)
+```
+
+## Why the property must be declared first
+
+A feature can transfer in at least three different senses:
+
+- **membership**: it remains prevalent in an unseen cohort;
+- **response**: its association with an external variable replicates in an
+  independent cohort;
+- **prediction**: a model trained without a cohort retains performance in that
+  cohort.
+
+These are not interchangeable claims. `microTransfer` therefore starts with an
+explicit declaration and matches each property to a different validation
+design.
+
+## Simulated multi-cohort data
+
+The example contains four cohorts, two classes, a continuous environmental
+variable, five truly stable members, several study-specific pooled candidates,
+and a small response signal.
+
+```{r simulate}
+studies <- paste0("S", 1:4)
+n_per_study <- 30
+metadata <- data.frame(
+  sample_id = paste0("sample_", seq_len(4 * n_per_study)),
+  study = rep(studies, each = n_per_study),
+  environment = rep(seq(-1.5, 1.5, length.out = n_per_study), 4),
+  state = rep(rep(c("A", "B"), each = n_per_study / 2), 4),
+  stringsAsFactors = FALSE
+)
+
+features <- paste0("taxon_", seq_len(60))
+counts <- matrix(
+  rpois(nrow(metadata) * length(features), lambda = 0.4),
+  nrow = nrow(metadata),
+  dimnames = list(metadata$sample_id, features)
+)
+
+# Stable membership in all cohorts.
+counts[, 1:5] <- counts[, 1:5] + matrix(
+  rpois(nrow(metadata) * 5, 8), nrow(metadata)
+)
+
+# Pooled-only candidates abundant in one cohort.
+counts[metadata$study == "S1", 6:15] <-
+  counts[metadata$study == "S1", 6:15] + 12
+
+# Response candidates; only the first two remain concordant in S4.
+for (j in 16:20) {
+  active <- metadata$study != "S4" | j <= 17
+  counts[active, j] <- counts[active, j] +
+    pmax(0, round(5 + 3 * metadata$environment[active]))
+}
+
+# Features carrying a class signal.
+counts[metadata$state == "B", 21:25] <-
+  counts[metadata$state == "B", 21:25] + 5
+```
+
+## Step 1: declare the property
+
+```{r declare}
+membership_claim <- declare_transferability(
+  property = "membership",
+  study_col = "study",
+  feature_level = "taxon"
+)
+membership_claim
+```
+
+## Step 2: discover without the held-out cohort
+
+Candidate discovery is repeated inside every outer fold. This prevents the
+held-out cohort from influencing feature selection.
+
+```{r discover}
+discover_membership(
+  counts,
+  metadata,
+  sample_col = "sample_id",
+  study_col = "study",
+  heldout = "S4",
+  prevalence = 0.50
+)$candidates
+```
+
+## Step 3: match validation to the property
+
+### Membership
+
+```{r membership}
+membership_fit <- run_transferability_workflow(
+  membership_claim,
+  counts,
+  metadata,
+  sample_col = "sample_id",
+  prevalence = 0.50,
+  n_null = 99,
+  matched = TRUE,
+  seed = 20260722
+)
+membership_fit$summary
+membership_fit$stable_features
+
+pooled_membership_contrast(
+  counts,
+  metadata,
+  sample_col = "sample_id",
+  study_col = "study",
+  thresholds = c(0.10, 0.30, 0.50)
+)
+```
+
+### Environmental response
+
+The first three cohorts define candidates. S4 is untouched until independent
+projection.
+
+```{r response}
+response_claim <- declare_transferability(
+  property = "response",
+  study_col = "study",
+  outcome_col = "environment"
+)
+
+response_fit <- run_transferability_workflow(
+  response_claim,
+  counts,
+  metadata,
+  sample_col = "sample_id",
+  discovery_studies = c("S1", "S2", "S3"),
+  validation_studies = "S4",
+  min_prevalence = 0.05,
+  min_total = 5,
+  alpha = 0.20
+)
+response_fit$summary
+```
+
+### Prediction
+
+The example uses a nearest-centroid classifier so the vignette has no modeling
+dependency. A publication analysis can provide `glmnet`, random-forest, or
+other `fit_fun` and `predict_fun` functions with the same interfaces.
+
+```{r prediction}
+prediction_claim <- declare_transferability(
+  property = "prediction",
+  study_col = "study",
+  outcome_col = "state"
+)
+
+prediction_fit <- run_transferability_workflow(
+  prediction_claim,
+  counts,
+  metadata,
+  sample_col = "sample_id",
+  features = features[21:25]
+)
+prediction_fit$summary
+
+prediction_null <- prediction_permutation_test(
+  counts,
+  metadata,
+  sample_col = "sample_id",
+  study_col = "study",
+  outcome_col = "state",
+  features = features[21:25],
+  permutations = 19,
+  seed = 20260722
+)
+prediction_null$balanced_accuracy_p
+```
+
+## Step 4: audit sensitivity and classify conservatively
+
+```{r sensitivity}
+classify_transferability(membership_fit)
+classify_transferability(response_fit)
+classify_transferability(prediction_fit)
+
+noise_fit <- label_noise_sensitivity(
+  counts,
+  metadata,
+  sample_col = "sample_id",
+  study_col = "study",
+  outcome_col = "state",
+  features = features[21:25],
+  noise = c(0, 0.10, 0.20),
+  replicates = 20,
+  seed = 20260722
+)
+noise_fit$summary
+
+membership_grid <- membership_sensitivity(
+  counts,
+  metadata,
+  sample_col = "sample_id",
+  study_col = "study",
+  prevalence = c(0.30, 0.50, 0.70),
+  min_depth = c(0, 50),
+  min_total = c(0, 10),
+  n_null = 0
+)
+head(membership_grid)
+```
+
+The evidence label is deliberately conservative and should accompany, not
+replace, the fold-level effect sizes, uncertainty intervals, empirical nulls,
+and any design limitations.

@@ -1,0 +1,32 @@
+Package: microTransfer
+Type: Package
+Title: Study-Aware Transferability Analysis for Multi-Cohort Microbiomes
+Version: 0.1.0
+URL: https://github.com/ruiyifan7-boop/microTransfer
+BugReports: https://github.com/ruiyifan7-boop/microTransfer/issues
+Authors@R: c(
+    person("Bin", "Li", role = c("aut", "cph")),
+    person("Ruiyi", "Fan",
+           email = "fanruiyi@jcut.edu.cn",
+           role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0000-0003-1616-0423"))
+    )
+Description: Implements a four-step workflow for multi-cohort microbiome
+    studies: declare the transferability property, discover candidates without
+    using held-out cohorts, match validation to membership, response, or
+    prediction, and audit sensitivity before assigning an evidence label.
+    Functions accept ordinary count matrices and sample metadata and retain
+    study structure throughout leave-one-study-out and discovery-projection
+    analyses.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends: R (>= 4.1.0)
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    glmnet,
+    metafor
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+RoxygenNote: 7.3.2

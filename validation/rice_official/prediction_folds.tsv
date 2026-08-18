@@ -1,0 +1,5 @@
+heldout_study	n_train	n_test	features	balanced_accuracy	macro_f1	chance	target_noise	realized_noise
+Arbuckle_2014	670	295	7932	1	1	0.5	0	0
+Arbuckle_2015	832	133	7787	1	1	0.5	0	0
+Arbuckle_2016	683	282	8118	0.996478873239437	0.996453856117098	0.5	0	0
+Jonesboro_2016	710	255	6674	0.94140625	0.940998627157599	0.5	0	0

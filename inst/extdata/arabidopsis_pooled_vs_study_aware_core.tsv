@@ -1,0 +1,4 @@
+prevalence_threshold	pooled_features	study_aware_features	pooled_only_features	study_aware_fraction_of_pooled
+0.1	188	177	11	0.9414893617021277
+0.3	185	147	38	0.7945945945945946
+0.5	154	98	56	0.6363636363636364

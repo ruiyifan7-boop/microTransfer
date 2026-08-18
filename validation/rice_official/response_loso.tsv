@@ -1,0 +1,5 @@
+study	candidates_tested	replicated	replication_fraction	heldout
+Arbuckle_2014	1681	1318	0.784057108863772	Arbuckle_2014
+Arbuckle_2015	1728	1273	0.736689814814815	Arbuckle_2015
+Arbuckle_2016	1848	1344	0.727272727272727	Arbuckle_2016
+Jonesboro_2016	2360	1277	0.541101694915254	Jonesboro_2016
