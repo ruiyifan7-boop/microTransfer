@@ -1,7 +1,8 @@
 # microTransfer 0.1.0
 
 Initial public release of the study-aware transferability framework used in
-the associated mSystems Research Article.
+the associated Research Article. This version is archived at
+<https://doi.org/10.5281/zenodo.21994248>.
 
 The release contains:
 

@@ -1,5 +1,7 @@
 # microTransfer 0.1.0
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21994248.svg)](https://doi.org/10.5281/zenodo.21994248)
+
 `microTransfer` turns the study-aware framework used in the Vaccinium
 benchmark into a reusable four-step workflow:
 
@@ -79,9 +81,11 @@ for version 0.1.0.
 
 ## Citation
 
-Please cite the associated mSystems Research Article and the archived software
-release. The release-specific DOI should be used to identify the exact code
-version; it will be added to the article after Zenodo registration.
+Please cite the associated Research Article and the archived software release:
+
+> Li, B., & Fan, R. (2026). *microTransfer: study-aware transferability
+> analysis for multi-cohort microbiomes* (Version v0.1.0) [Computer software].
+> Zenodo. https://doi.org/10.5281/zenodo.21994248
 
 ## License
 
